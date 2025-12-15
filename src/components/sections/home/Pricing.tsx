@@ -3,80 +3,64 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Zap, Building2, Rocket } from 'lucide-react';
-import { useSmartNavigation } from '@/hooks/useSmartNavigation';
+import { Check, Star, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
+import { useSmartNavigation } from '@/hooks/useSmartNavigation';
 
 const DEFAULT_PRICING = {
-  title: 'Transparent Pricing for Every Scale',
-  subtitle: 'Choose the perfect plan for your institution. No hidden fees, no setup costs.',
-  billingToggle: {
-    monthly: 'Monthly',
-    yearly: 'Yearly',
-  },
+  title: 'Choose Your Financial Plan',
+  subtitle: 'Transparent pricing for every stage of your financial journey',
+  billingToggleText: 'Annual billing (Save 20%)',
   plans: [
     {
-      id: 'starter',
       name: 'Starter',
-      description: 'Perfect for small financial institutions',
-      icon: 'zap',
-      monthlyPrice: 299,
-      yearlyPrice: 2990,
+      description: 'Perfect for individuals starting their financial journey',
+      monthlyPrice: 9,
+      yearlyPrice: 86,
       features: [
-        'Up to 1,000 transactions/month',
-        'Basic payment processing',
-        'Email support',
-        'Standard security',
-        'API access',
+        'Personal budget tracking',
+        'Basic expense categorization',
+        'Monthly financial reports',
       ],
       ctaText: 'Start Free Trial',
-      ctaHref: '/signup?plan=starter',
+      ctaHref: '/signup/starter',
       popular: false,
     },
     {
-      id: 'professional',
       name: 'Professional',
-      description: 'Ideal for growing financial services',
-      icon: 'building2',
-      monthlyPrice: 799,
-      yearlyPrice: 7990,
+      description: 'Advanced tools for serious financial planning',
+      monthlyPrice: 29,
+      yearlyPrice: 278,
       features: [
-        'Up to 10,000 transactions/month',
-        'Advanced payment processing',
-        'Priority support',
-        'Enhanced security & compliance',
-        'Full API suite',
-        'Custom integrations',
-        'Real-time analytics',
+        'Everything in Starter',
+        'Investment portfolio tracking',
+        'Tax optimization insights',
+        'Real-time market alerts',
+        'Priority customer support',
       ],
       ctaText: 'Get Started',
-      ctaHref: '/signup?plan=professional',
+      ctaHref: '/signup/professional',
       popular: true,
     },
     {
-      id: 'enterprise',
       name: 'Enterprise',
-      description: 'For large-scale financial operations',
-      icon: 'rocket',
-      monthlyPrice: 1999,
-      yearlyPrice: 19990,
+      description: 'Comprehensive solution for businesses and advisors',
+      monthlyPrice: 99,
+      yearlyPrice: 950,
       features: [
-        'Unlimited transactions',
-        'White-label solutions',
+        'Everything in Professional',
+        'Multi-client management',
+        'Advanced analytics dashboard',
+        'Custom reporting tools',
         'Dedicated account manager',
-        'Bank-grade security',
-        'Custom API development',
-        'SLA guarantees',
-        'Advanced reporting',
-        'Multi-region deployment',
       ],
       ctaText: 'Contact Sales',
-      ctaHref: '/contact?plan=enterprise',
+      ctaHref: '/contact/enterprise',
       popular: false,
     },
   ],
-  guarantee: '30-day money-back guarantee • Cancel anytime • No setup fees',
-  additionalInfo: 'All plans include bank-grade security, PCI compliance, and 99.99% uptime SLA',
+  guaranteeText: '30-day money-back guarantee',
+  supportText: '24/7 customer support included',
 } as const;
 
 type PricingProps = Partial<typeof DEFAULT_PRICING>;
@@ -86,26 +70,12 @@ export default function Pricing(props: PricingProps) {
   const navigate = useSmartNavigation();
   const [isYearly, setIsYearly] = useState(false);
 
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'zap':
-        return <Zap className="h-6 w-6" />;
-      case 'building2':
-        return <Building2 className="h-6 w-6" />;
-      case 'rocket':
-        return <Rocket className="h-6 w-6" />;
-      default:
-        return <Zap className="h-6 w-6" />;
-    }
-  };
-
-  const formatPrice = (monthly: number, yearly: number) => {
-    const price = isYearly ? yearly / 12 : monthly;
-    return Math.floor(price);
-  };
-
   const handlePlanSelect = (href: string) => {
     navigate(href);
+  };
+
+  const toggleBilling = () => {
+    setIsYearly(!isYearly);
   };
 
   return (
@@ -113,92 +83,84 @@ export default function Pricing(props: PricingProps) {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
             <span data-editable="title">{config.title}</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
             <span data-editable="subtitle">{config.subtitle}</span>
           </p>
 
           {/* Billing Toggle */}
-          <div className="inline-flex items-center bg-muted rounded-lg p-1">
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <span className={`text-sm ${!isYearly ? 'text-foreground' : 'text-muted-foreground'}`}>
+              Monthly
+            </span>
             <button
-              onClick={() => setIsYearly(false)}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                !isYearly
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+              onClick={toggleBilling}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
+                isYearly ? 'bg-primary' : 'bg-muted'
               }`}
+              role="switch"
+              aria-checked={isYearly}
             >
-              <span data-editable="billingToggle.monthly">{config.billingToggle.monthly}</span>
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
+                  isYearly ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
             </button>
-            <button
-              onClick={() => setIsYearly(true)}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                isYearly
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span data-editable="billingToggle.yearly">{config.billingToggle.yearly}</span>
-              <Badge variant="secondary" className="ml-2">
-                Save 17%
-              </Badge>
-            </button>
+            <span className={`text-sm ${isYearly ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <span data-editable="billingToggleText">{config.billingToggleText}</span>
+            </span>
           </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid gap-8 lg:grid-cols-3 max-w-7xl mx-auto mb-16">
+        <div className="grid gap-8 lg:grid-cols-3 max-w-7xl mx-auto">
           {config.plans.map((plan, idx) => (
             <Card
-              key={plan.id}
-              className={`relative transition-all duration-300 hover:shadow-lg ${
-                plan.popular
-                  ? 'border-primary shadow-lg scale-105'
-                  : 'border-border hover:border-primary/50'
+              key={idx}
+              className={`relative bg-card text-card-foreground border-border transition-all duration-300 hover:shadow-lg ${
+                plan.popular ? 'border-primary shadow-lg scale-105' : ''
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground px-4 py-1 flex items-center gap-1">
+                    <Star className="w-3 h-3" />
                     Most Popular
                   </Badge>
                 </div>
               )}
 
               <CardHeader className="text-center pb-8">
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 bg-primary/10 rounded-lg text-primary">
-                    {getIcon(plan.icon)}
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold mb-2">
+                <h3 className="text-xl font-semibold mb-2">
                   <span data-editable={`plans[${idx}].name`}>{plan.name}</span>
                 </h3>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-muted-foreground text-sm mb-6">
                   <span data-editable={`plans[${idx}].description`}>{plan.description}</span>
                 </p>
+
                 <div className="mb-6">
-                  <div className="flex items-baseline justify-center">
+                  <div className="flex items-baseline justify-center gap-1">
                     <span className="text-4xl font-bold">
-                      ${formatPrice(plan.monthlyPrice, plan.yearlyPrice)}
+                      ${isYearly ? plan.yearlyPrice : plan.monthlyPrice}
                     </span>
-                    <span className="text-muted-foreground ml-2">/month</span>
+                    <span className="text-muted-foreground">/{isYearly ? 'year' : 'month'}</span>
                   </div>
                   {isYearly && (
                     <p className="text-sm text-muted-foreground mt-1">
-                      Billed annually (${plan.yearlyPrice}/year)
+                      Save ${plan.monthlyPrice * 12 - plan.yearlyPrice} annually
                     </p>
                   )}
                 </div>
               </CardHeader>
 
-              <CardContent>
-                <ul className="space-y-4 mb-8">
+              <CardContent className="pt-0">
+                <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, featureIdx) => (
-                    <li key={featureIdx} className="flex items-start">
-                      <Check className="h-5 w-5 text-primary mt-0.5 mr-3 flex-shrink-0" />
+                    <li key={featureIdx} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                       <span className="text-sm">
                         <span data-editable={`plans[${idx}].features[${featureIdx}]`}>
                           {feature}
@@ -210,14 +172,13 @@ export default function Pricing(props: PricingProps) {
 
                 <Button
                   onClick={() => handlePlanSelect(plan.ctaHref)}
-                  data-editable-href={`plans[${idx}].ctaHref`}
-                  data-href={plan.ctaHref}
                   className={`w-full ${
                     plan.popular
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                       : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                   }`}
-                  size="lg"
+                  data-editable-href={`plans[${idx}].ctaHref`}
+                  data-href={plan.ctaHref}
                 >
                   <span data-editable={`plans[${idx}].ctaText`}>{plan.ctaText}</span>
                 </Button>
@@ -226,14 +187,18 @@ export default function Pricing(props: PricingProps) {
           ))}
         </div>
 
-        {/* Footer Info */}
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground">
-            <span data-editable="guarantee">{config.guarantee}</span>
-          </p>
-          <p className="text-sm text-muted-foreground">
-            <span data-editable="additionalInfo">{config.additionalInfo}</span>
-          </p>
+        {/* Footer */}
+        <div className="text-center mt-16">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary" />
+              <span data-editable="guaranteeText">{config.guaranteeText}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              <span data-editable="supportText">{config.supportText}</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

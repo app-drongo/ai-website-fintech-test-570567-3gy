@@ -11,6 +11,7 @@ const DEFAULT_NAVIGATION = {
   brandTagline: 'Smart Finance',
   navItems: [
     { label: 'Home', href: '#hero' },
+    { label: 'Features', href: '#features' },
     { label: 'Pricing', href: '#pricing' },
   ],
   ctaText: 'Get Started',
